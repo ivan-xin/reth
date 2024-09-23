@@ -4,32 +4,24 @@
 
 use alloy_genesis::Genesis;
 use reth::{
-    builder::{
+    args::DevArgs, builder::{
         components::{ExecutorBuilder, PayloadServiceBuilder},
         BuilderContext, NodeBuilder,
-    },
-    payload::{EthBuiltPayload, EthPayloadBuilderAttributes},
-    primitives::{
+    }, payload::{EthBuiltPayload, EthPayloadBuilderAttributes}, primitives::{
         address,
         revm_primitives::{Env, PrecompileResult},
         Bytes,
-    },
-    revm::{
+    }, revm::{
         handler::register::EvmHandler,
         inspector_handle_register,
         precompile::{Precompile, PrecompileOutput, PrecompileSpecId},
-        primitives::BlockEnv,
         ContextPrecompiles, Database, Evm, EvmBuilder, GetInspector,
-    },
-    rpc::types::engine::PayloadAttributes,
-    tasks::TaskManager,
-    transaction_pool::TransactionPool,
+    }, rpc::types::engine::PayloadAttributes, tasks::TaskManager, transaction_pool::TransactionPool
 };
 use reth_chainspec::{Chain, ChainSpec};
 use reth_evm_ethereum::EthEvmConfig;
 use reth_node_api::{
-    ConfigureEvm, ConfigureEvmEnv, FullNodeTypes, NextBlockEnvAttributes, NodeTypes,
-    NodeTypesWithEngine, PayloadTypes,
+    ConfigureEvm, ConfigureEvmEnv, FullNodeTypes, NodeTypes, NodeTypesWithEngine, PayloadTypes,
 };
 use reth_node_core::{args::RpcServerArgs, node_config::NodeConfig};
 use reth_node_ethereum::{
@@ -89,7 +81,14 @@ impl MyEvmConfig {
 }
 
 impl ConfigureEvmEnv for MyEvmConfig {
-    type Header = Header;
+    fn fill_cfg_env(
+        &self,
+        cfg_env: &mut CfgEnvWithHandlerCfg,
+        header: &Header,
+        total_difficulty: U256,
+    ) {
+        self.inner.fill_cfg_env(cfg_env, header, total_difficulty);
+    }
 
     fn fill_tx_env(&self, tx_env: &mut TxEnv, transaction: &TransactionSigned, sender: Address) {
         self.inner.fill_tx_env(tx_env, transaction, sender);
@@ -103,23 +102,6 @@ impl ConfigureEvmEnv for MyEvmConfig {
         data: Bytes,
     ) {
         self.inner.fill_tx_env_system_contract_call(env, caller, contract, data);
-    }
-
-    fn fill_cfg_env(
-        &self,
-        cfg_env: &mut CfgEnvWithHandlerCfg,
-        header: &Self::Header,
-        total_difficulty: U256,
-    ) {
-        self.inner.fill_cfg_env(cfg_env, header, total_difficulty);
-    }
-
-    fn next_cfg_and_block_env(
-        &self,
-        parent: &Self::Header,
-        attributes: NextBlockEnvAttributes,
-    ) -> (CfgEnvWithHandlerCfg, BlockEnv) {
-        self.inner.next_cfg_and_block_env(parent, attributes)
     }
 }
 
@@ -207,17 +189,28 @@ async fn main() -> eyre::Result<()> {
     let tasks = TaskManager::current();
 
     // create a custom chain spec
-    let spec = ChainSpec::builder()
-        .chain(Chain::mainnet())
-        .genesis(Genesis::default())
-        .london_activated()
-        .paris_activated()
-        .shanghai_activated()
-        .cancun_activated()
-        .build();
+    // let spec = ChainSpec::builder()
+    //     .chain(Chain::mainnet())
+    //     .genesis(Genesis::default())
+        // .london_activated()
+        // .paris_activated()
+        // .shanghai_activated()
+        // .cancun_activated()
+        // .build();
+    
+    // let spec = ChainSpec::builder()
+    // .chain(Chain::dev())
+    // .genesis(Genesis::default())
+    // .london_activated()
+    // .build();
 
+    let spec = reth_chainspec::DEV.clone();
     let node_config =
-        NodeConfig::test().with_rpc(RpcServerArgs::default().with_http()).with_chain(spec);
+        NodeConfig::test().with_dev(DevArgs {
+            dev: true,
+            block_max_transactions: None,
+            block_time: Some(std::time::Duration::from_secs(1))
+        }).with_rpc(RpcServerArgs::default().with_http()).with_chain(spec);
 
     let handle = NodeBuilder::new(node_config)
         .testing_node(tasks.executor())
