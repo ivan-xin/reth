@@ -5,6 +5,7 @@
 use alloy_genesis::Genesis;
 use alloy_primitives::{address, Address, Bytes, U256};
 use reth::{
+    args::DevArgs,
     builder::{
         components::{ExecutorBuilder, PayloadServiceBuilder},
         BuilderContext, NodeBuilder,
@@ -208,17 +209,25 @@ async fn main() -> eyre::Result<()> {
     let tasks = TaskManager::current();
 
     // create a custom chain spec
-    let spec = ChainSpec::builder()
-        .chain(Chain::mainnet())
-        .genesis(Genesis::default())
-        .london_activated()
-        .paris_activated()
-        .shanghai_activated()
-        .cancun_activated()
-        .build();
+    // let spec = ChainSpec::builder()
+    //     .chain(Chain::mainnet())
+    //     .genesis(Genesis::default())
+    //     .london_activated()
+    //     .paris_activated()
+    //     .shanghai_activated()
+    //     .cancun_activated()
+    //     .build();
 
+    // let node_config =
+    //     NodeConfig::test().with_rpc(RpcServerArgs::default().with_http()).with_chain(spec);
+
+    let spec = reth_chainspec::DEV.clone();
     let node_config =
-        NodeConfig::test().with_rpc(RpcServerArgs::default().with_http()).with_chain(spec);
+        NodeConfig::test().with_dev(DevArgs {
+            dev: true,
+            block_max_transactions: None,
+            block_time: Some(std::time::Duration::from_secs(1))
+        }).with_rpc(RpcServerArgs::default().with_http()).with_chain(spec);
 
     let handle = NodeBuilder::new(node_config)
         .testing_node(tasks.executor())
