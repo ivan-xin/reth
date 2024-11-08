@@ -155,7 +155,7 @@ members = [
     "narwhal/node", 
     "narwhal/network", 
     "narwhal/consensus", 
-    "narwhal/crypto",
+    "narwhal/crypto", "crates/consensus/narwhal",
 ]
 default-members = ["bin/reth"]
 exclude = ["book/sources"]
