@@ -50,7 +50,7 @@ NarwhalMiningTask<Client, Pool, Executor, Engine, ChainSpec>
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn new(
         chain_spec: Arc<ChainSpec>,
-        miner: MiningMode,
+        miner: NarwhalMode,
         to_engine: UnboundedSender<BeaconEngineMessage<Engine>>,
         storage: Storage,
         client: Client,
@@ -78,7 +78,7 @@ NarwhalMiningTask<Client, Pool, Executor, Engine, ChainSpec>
 }
 
 impl<Executor, Client, Pool, Engine, ChainSpec> Future
-    for MiningTask<Client, Pool, Executor, Engine, ChainSpec>
+    for NarwhalMiningTask<Client, Pool, Executor, Engine, ChainSpec>
 where
     Client: StateProviderFactory + CanonChainTracker + Clone + Unpin + 'static,
     Pool: TransactionPool + Unpin + 'static,

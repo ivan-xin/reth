@@ -83,7 +83,7 @@ impl NarwhaAutoSealClient {
     }
 }
 
-impl HeadersClient for AutoSealClient {
+impl HeadersClient for NarwhaAutoSealClient {
     type Output = HeadersFut;
 
     fn get_headers_with_priority(
@@ -99,7 +99,7 @@ impl HeadersClient for AutoSealClient {
     }
 }
 
-impl BodiesClient for AutoSealClient {
+impl BodiesClient for NarwhaAutoSealClient {
     type Output = BodiesFut;
 
     fn get_block_bodies_with_priority(
@@ -115,7 +115,7 @@ impl BodiesClient for AutoSealClient {
     }
 }
 
-impl DownloadClient for AutoSealClient {
+impl DownloadClient for NarwhaAutoSealClient {
     fn report_bad_message(&self, _peer_id: PeerId) {
         warn!("Reported a bad message on a miner, we should never produce bad blocks");
         // noop
