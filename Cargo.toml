@@ -308,6 +308,7 @@ overflow-checks = true
 op-reth = { path = "crates/optimism/bin" }
 reth = { path = "bin/reth" }
 reth-auto-seal-consensus = { path = "crates/consensus/auto-seal" }
+reth-narwhal-consensus = {path = "crates/consensus/narwhal" }
 reth-basic-payload-builder = { path = "crates/payload/basic" }
 reth-beacon-consensus = { path = "crates/consensus/beacon" }
 reth-bench = { path = "bin/reth-bench" }
@@ -433,6 +434,7 @@ revm-primitives = { version = "14.0.0", features = [
 ], default-features = false }
 
 # eth
+alloy = { version = "0.6.1", features = ["full"] }
 alloy-chains = "0.1.32"
 alloy-dyn-abi = "0.8.11"
 alloy-primitives = { version = "0.8.11", default-features = false }

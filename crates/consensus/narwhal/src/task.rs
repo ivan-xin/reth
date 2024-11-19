@@ -1,4 +1,4 @@
-use crate::{mode::NarwhalMode, Storage};
+use crate::{mode::NarwhalMode, NarwhalStorage};
 use alloy_rpc_types_engine::ForkchoiceState;
 use futures_util::{future::BoxFuture, FutureExt};
 use reth_beacon_consensus::{BeaconEngineMessage, ForkchoiceStatus};
@@ -17,6 +17,7 @@ use std::{
     task::{Context, Poll},
 };
 use tokio::sync::{mpsc::UnboundedSender, oneshot};
+use tracing::{debug, error, warn};
 
 /// A Future that listens for new ready transactions and puts new blocks into storage
 pub struct NarwhalMiningTask<Client, Pool: TransactionPool, Executor, Engine: EngineTypes, ChainSpec> {
@@ -29,7 +30,7 @@ pub struct NarwhalMiningTask<Client, Pool: TransactionPool, Executor, Engine: En
     /// Single active future that inserts a new block into `storage`
     insert_task: Option<BoxFuture<'static, Option<EventStream<PipelineEvent>>>>,
     /// Shared storage to insert new blocks
-    storage: Storage,
+    storage: NarwhalStorage,
     /// Pool where transactions are stored
     pool: Pool,
     /// backlog of sets of transactions ready to be mined
@@ -52,7 +53,7 @@ NarwhalMiningTask<Client, Pool, Executor, Engine, ChainSpec>
         chain_spec: Arc<ChainSpec>,
         miner: NarwhalMode,
         to_engine: UnboundedSender<BeaconEngineMessage<Engine>>,
-        storage: Storage,
+        storage: NarwhalStorage,
         client: Client,
         pool: Pool,
         block_executor: Executor,
@@ -211,9 +212,9 @@ where
 }
 
 impl<Client, Pool: TransactionPool, EvmConfig: std::fmt::Debug, Engine: EngineTypes, ChainSpec>
-    std::fmt::Debug for MiningTask<Client, Pool, EvmConfig, Engine, ChainSpec>
+    std::fmt::Debug for NarwhalMiningTask<Client, Pool, EvmConfig, Engine, ChainSpec>
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("MiningTask").finish_non_exhaustive()
+        f.debug_struct("NarwhalMiningTask").finish_non_exhaustive()
     }
 }

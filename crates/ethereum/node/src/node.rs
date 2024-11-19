@@ -2,7 +2,10 @@
 
 use std::sync::Arc;
 
-use reth_auto_seal_consensus::AutoSealConsensus;
+// quote narwhal
+// use reth_auto_seal_consensus::AutoSealConsensus;
+use reth_narwhal_consensus::NarwhalConsensus;
+
 use reth_basic_payload_builder::{BasicPayloadJobGenerator, BasicPayloadJobGeneratorConfig};
 use reth_beacon_consensus::EthBeaconConsensus;
 use reth_chainspec::ChainSpec;
@@ -335,7 +338,8 @@ where
 
     async fn build_consensus(self, ctx: &BuilderContext<Node>) -> eyre::Result<Self::Consensus> {
         if ctx.is_dev() {
-            Ok(Arc::new(AutoSealConsensus::new(ctx.chain_spec())))
+            // quote narwhal
+            Ok(Arc::new(NarwhalConsensus::new(ctx.chain_spec())))
         } else {
             Ok(Arc::new(EthBeaconConsensus::new(ctx.chain_spec())))
         }

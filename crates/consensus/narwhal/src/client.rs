@@ -1,5 +1,5 @@
 
-use crate::Storage;
+use crate::NarwhalStorage;
 use alloy_eips::BlockHashOrNumber;
 use alloy_primitives::B256;
 use reth_network_p2p::{
@@ -15,13 +15,14 @@ use tracing::{trace, warn};
 
 
 #[derive(Debug, Clone)]
-pub struct NarwhaAutoSealClient {
-    storage: Storage,
+// NarwhalAutoSealClient
+pub struct NarwhalAutoSealClient {
+    storage: NarwhalStorage,
 }
 
 
-impl NarwhaAutoSealClient {
-    pub(crate) const fn new(storage: Storage) -> Self {
+impl NarwhalAutoSealClient {
+    pub(crate) const fn new(storage: NarwhalStorage) -> Self {
         Self { storage }
     }
 
@@ -83,7 +84,7 @@ impl NarwhaAutoSealClient {
     }
 }
 
-impl HeadersClient for NarwhaAutoSealClient {
+impl HeadersClient for NarwhalAutoSealClient {
     type Output = HeadersFut;
 
     fn get_headers_with_priority(
@@ -99,7 +100,7 @@ impl HeadersClient for NarwhaAutoSealClient {
     }
 }
 
-impl BodiesClient for NarwhaAutoSealClient {
+impl BodiesClient for NarwhalAutoSealClient {
     type Output = BodiesFut;
 
     fn get_block_bodies_with_priority(
@@ -115,7 +116,7 @@ impl BodiesClient for NarwhaAutoSealClient {
     }
 }
 
-impl DownloadClient for NarwhaAutoSealClient {
+impl DownloadClient for NarwhalAutoSealClient {
     fn report_bad_message(&self, _peer_id: PeerId) {
         warn!("Reported a bad message on a miner, we should never produce bad blocks");
         // noop

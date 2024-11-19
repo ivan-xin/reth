@@ -25,6 +25,7 @@ reth-evm.workspace = true
 reth-evm-ethereum.workspace = true
 reth-consensus.workspace = true
 reth-auto-seal-consensus.workspace = true
+reth-narwhal-consensus.workspace = true
 reth-beacon-consensus.workspace = true
 reth-rpc.workspace = true
 reth-node-api.workspace = true

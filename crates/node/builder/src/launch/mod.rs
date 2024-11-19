@@ -221,7 +221,8 @@ where
                 ctx.dev_mining_mode(ctx.components().pool().pending_transactions_listener());
             info!(target: "reth::cli", mode=%mining_mode, "configuring dev mining mode");
 
-            let (_, client, mut task) = reth_auto_seal_consensus::AutoSealBuilder::new(
+            // quote narwhal
+            let (_, client, mut task) = reth_narwhal_consensus::NarwhalSealBuilder::new(
                 ctx.chain_spec(),
                 ctx.blockchain_db().clone(),
                 ctx.components().pool().clone(),
@@ -230,6 +231,16 @@ where
                 ctx.components().block_executor().clone(),
             )
             .build();
+
+            // let (_, client, mut task) = reth_auto_seal_consensus::AutoSealBuilder::new(
+            //     ctx.chain_spec(),
+            //     ctx.blockchain_db().clone(),
+            //     ctx.components().pool().clone(),
+            //     consensus_engine_tx.clone(),
+            //     mining_mode,
+            //     ctx.components().block_executor().clone(),
+            // )
+            // .build();
 
             let pipeline = crate::setup::build_networked_pipeline(
                 &ctx.toml_config().stages,

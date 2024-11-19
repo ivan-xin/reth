@@ -5,7 +5,11 @@ use std::{sync::Arc, thread::available_parallelism};
 use alloy_primitives::{BlockNumber, B256};
 use eyre::{Context, OptionExt};
 use rayon::ThreadPoolBuilder;
-use reth_auto_seal_consensus::MiningMode;
+// use reth_auto_seal_consensus::MiningMode;
+
+// quote narwhal
+use reth_narwhal_consensus::NarwhalMode;
+
 use reth_beacon_consensus::EthBeaconConsensus;
 use reth_blockchain_tree::{
     BlockchainTree, BlockchainTreeConfig, ShareableBlockchainTree, TreeExternals,
@@ -386,13 +390,22 @@ impl<R, ChainSpec: EthChainSpec> LaunchContextWith<Attached<WithConfigs<ChainSpe
     }
 
     /// Returns the [`MiningMode`] intended for --dev mode.
-    pub fn dev_mining_mode(&self, pending_transactions_listener: Receiver<B256>) -> MiningMode {
+    pub fn dev_mining_mode(&self, pending_transactions_listener: Receiver<B256>) -> NarwhalMode {
+        // if let Some(interval) = self.node_config().dev.block_time {
+        //     MiningMode::interval(interval)
+        // } else if let Some(max_transactions) = self.node_config().dev.block_max_transactions {
+        //     MiningMode::instant(max_transactions, pending_transactions_listener)
+        // } else {
+        //     MiningMode::instant(1, pending_transactions_listener)
+        // }
+
+        //  quote narwhal
         if let Some(interval) = self.node_config().dev.block_time {
-            MiningMode::interval(interval)
+            NarwhalMode::interval(interval)
         } else if let Some(max_transactions) = self.node_config().dev.block_max_transactions {
-            MiningMode::instant(max_transactions, pending_transactions_listener)
+            NarwhalMode::instant(max_transactions, pending_transactions_listener)
         } else {
-            MiningMode::instant(1, pending_transactions_listener)
+            NarwhalMode::instant(1, pending_transactions_listener)
         }
     }
 }
