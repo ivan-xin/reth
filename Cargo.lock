@@ -8028,6 +8028,33 @@ dependencies = [
 [[package]]
 name = "reth-narwhal-consensus"
 version = "1.1.1"
+dependencies = [
+ "alloy-eips",
+ "alloy-primitives",
+ "alloy-rpc-types-engine",
+ "futures-util",
+ "reth-beacon-consensus",
+ "reth-chainspec",
+ "reth-consensus",
+ "reth-engine-primitives",
+ "reth-evm",
+ "reth-execution-errors",
+ "reth-execution-types",
+ "reth-network-p2p",
+ "reth-network-peers",
+ "reth-optimism-consensus",
+ "reth-primitives",
+ "reth-provider",
+ "reth-revm",
+ "reth-stages-api",
+ "reth-tokio-util",
+ "reth-transaction-pool",
+ "reth-trie",
+ "revm-primitives",
+ "tokio",
+ "tokio-stream",
+ "tracing",
+]
 
 [[package]]
 name = "reth-net-banlist"
