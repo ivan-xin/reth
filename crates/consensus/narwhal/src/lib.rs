@@ -110,5 +110,56 @@ where
     Engine: EngineTypes,
     ChainSpec: EthChainSpec,
 {
+    /// Creates a new builder instance to configure all parts.
+    pub fn new(
+        chain_spec: Arc<ChainSpec>,
+        client: Client,
+        pool: Pool,
+        to_engine: UnboundedSender<BeaconEngineMessage<Engine>>,
+        mode: MiningMode,
+        evm_config: EvmConfig,
+    ) -> Self {
+        let latest_header = client.latest_header().ok().flatten().unwrap_or_else(|| {
+            SealedHeader::new(chain_spec.genesis_header().clone(), chain_spec.genesis_hash())
+        });
 
+        Self {
+            storage: Storage::new(latest_header),
+            client,
+            consensus: AutoSealConsensus::new(chain_spec),
+            pool,
+            mode,
+            to_engine,
+            evm_config,
+        }
+    }
+
+    /// Sets the [`MiningMode`] it operates in, default is [`MiningMode::Auto`]
+    pub fn mode(mut self, mode: MiningMode) -> Self {
+        self.mode = mode;
+        self
+    }
+
+    /// Consumes the type and returns all components
+    #[track_caller]
+    pub fn build(
+        self,
+    ) -> (
+        NarwhalConsensus<ChainSpec>,
+        NarwhalAutoSealClient,
+        MiningTask<Client, Pool, EvmConfig, Engine, ChainSpec>,
+    ) {
+        let Self { client, consensus, pool, mode, storage, to_engine, evm_config } = self;
+        let auto_client = AutoSealClient::new(storage.clone());
+        let task = MiningTask::new(
+            Arc::clone(&consensus.chain_spec),
+            mode,
+            to_engine,
+            storage,
+            client,
+            pool,
+            evm_config,
+        );
+        (consensus, auto_client, task)
+    }
 }
