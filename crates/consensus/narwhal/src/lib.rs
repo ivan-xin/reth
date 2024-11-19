@@ -1,4 +1,19 @@
+//! A [Consensus] implementation for local testing purposes
+//! that automatically seals blocks.
+//!
+//! The Mining task polls a [`MiningMode`], and will return a list of transactions that are ready to
+//! be mined.
+//!
+//! These downloaders poll the miner, assemble the block, and return transactions that are ready to
+//! be mined.
 
+#![doc(
+    html_logo_url = "https://raw.githubusercontent.com/paradigmxyz/reth/main/assets/reth-docs.png",
+    html_favicon_url = "https://avatars0.githubusercontent.com/u/97369466?s=256",
+    issue_tracker_base_url = "https://github.com/paradigmxyz/reth/issues/"
+)]
+#![cfg_attr(not(test), warn(unused_crate_dependencies))]
+#![cfg_attr(docsrs, feature(doc_cfg, doc_auto_cfg))]
 
 use alloy_eips::{eip1898::BlockHashOrNumber, eip7685::Requests};
 use alloy_primitives::{BlockHash, BlockNumber, Bloom, B256, U256};
@@ -393,7 +408,9 @@ impl NarwhalStorageInner {
         header.logs_bloom = receipts_with_bloom.iter().fold(Bloom::ZERO, |bloom, r| bloom | *r);
 
         // update receipts root
-        header.receipts_root = {
+        header.receipts_root = execution_outcome.receipts_root_slow(header.number).expect("Receipts is present");
+        
+        // header.receipts_root = {
             // #[cfg(feature = "optimism")]
             // let receipts_root = execution_outcome
             //     .generic_receipts_root_slow(header.number, |receipts| {
@@ -405,12 +422,12 @@ impl NarwhalStorageInner {
             //     })
             //     .expect("Receipts is present");
 
-            #[cfg(not(feature = "optimism"))]
-            let receipts_root =
-                execution_outcome.receipts_root_slow(header.number).expect("Receipts is present");
+            // #[cfg(not(feature = "optimism"))]
+        //     let receipts_root =
+        //         execution_outcome.receipts_root_slow(header.number).expect("Receipts is present");
 
-            receipts_root
-        };
+        //     receipts_root
+        // };
         trace!(target: "consensus::auto", root=?header.state_root, ?body, "calculated root");
 
         // finally insert into storage

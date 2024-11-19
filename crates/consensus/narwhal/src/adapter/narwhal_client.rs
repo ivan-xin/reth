@@ -55,7 +55,7 @@ impl NarwhalClient {
         }
     }
 
-    async fn submit_batch(&self, batch: Bytes) -> Result<()> {
+    pub async fn submit_batch(&self, batch: Bytes) -> Result<()> {
         let mut connection = self.connect().await?;
         connection.send(batch).await?;
         Ok(())
