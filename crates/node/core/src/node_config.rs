@@ -2,7 +2,7 @@
 
 use crate::{
     args::{
-        DatabaseArgs, DatadirArgs, DebugArgs, DevArgs, NetworkArgs, PayloadBuilderArgs,
+        DatabaseArgs, DatadirArgs, DebugArgs, DevArgs, NarwhalArgs, NetworkArgs, PayloadBuilderArgs,
         PruningArgs, RpcServerArgs, TxPoolArgs,
     },
     dirs::{ChainPath, DataDirPath},
@@ -126,6 +126,9 @@ pub struct NodeConfig<ChainSpec> {
     /// All dev related arguments with --dev prefix
     pub dev: DevArgs,
 
+    /// All narwhal related arguments with --narwhal prefix
+    pub narwhal: NarwhalArgs,
+    
     /// All pruning related arguments
     pub pruning: PruningArgs,
 }
@@ -154,6 +157,7 @@ impl<ChainSpec> NodeConfig<ChainSpec> {
             debug: DebugArgs::default(),
             db: DatabaseArgs::default(),
             dev: DevArgs::default(),
+            narwhal: NarwhalArgs::default(),
             pruning: PruningArgs::default(),
             datadir: DatadirArgs::default(),
         }
@@ -178,6 +182,25 @@ impl<ChainSpec> NodeConfig<ChainSpec> {
         }
     }
 
+    /// Sets --narwhal mode for the node.
+    /// 
+    /// In addition to setting the `--narwhal` flag, this also:
+    /// - disables discovery in [`NetworkArgs`].
+    pub const fn narwhal(mut self) -> Self {
+        self.narwhal.narwhal = true;
+        self.network.discovery.disable_discovery = true;
+        self
+    }
+
+    /// Sets --narwhal mode for the node [`NodeConfig::narwhal`], if `narwhal` is true.
+    pub const fn set_narwhal(self, narwhal: bool) -> Self {
+        if narwhal {
+            self.narwhal()
+        } else {
+            self
+        }
+    }
+    
     /// Set the data directory args for the node
     pub fn with_datadir_args(mut self, datadir_args: DatadirArgs) -> Self {
         self.datadir = datadir_args;

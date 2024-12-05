@@ -11,7 +11,7 @@ use reth_node_builder::{NodeBuilder, WithLaunchContext};
 use reth_node_core::{
     args::{
         DatabaseArgs, DatadirArgs, DebugArgs, DevArgs, NetworkArgs, PayloadBuilderArgs,
-        PruningArgs, RpcServerArgs, TxPoolArgs,
+        PruningArgs, RpcServerArgs, TxPoolArgs,NarwhalArgs,
     },
     node_config::NodeConfig,
     version,
@@ -102,6 +102,10 @@ pub struct NodeCommand<
     /// All dev related arguments with --dev prefix
     #[command(flatten)]
     pub dev: DevArgs,
+    
+    // All narwhal related arguments with --narwhal prefix
+    #[command(flatten)]
+    pub narwhal: NarwhalArgs,
 
     /// All pruning related arguments
     #[command(flatten)]
@@ -158,6 +162,7 @@ impl<
             debug,
             db,
             dev,
+            narwhal,
             pruning,
             ext,
         } = self;
@@ -176,6 +181,7 @@ impl<
             debug,
             db,
             dev,
+            narwhal,
             pruning,
         };
 

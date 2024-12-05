@@ -44,6 +44,9 @@ pub use txpool::TxPoolArgs;
 mod dev;
 pub use dev::DevArgs;
 
+mod narwhal;
+pub use narwhal::NarwhalArgs;
+
 /// PruneArgs for configuring the pruning and full node
 mod pruning;
 pub use pruning::PruningArgs;

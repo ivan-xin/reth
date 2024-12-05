@@ -625,6 +625,11 @@ impl<Node: FullNodeTypes> BuilderContext<Node> {
         self.config().dev.dev
     }
 
+    /// Returns true if the narwhal is configured as --narwhal
+    pub const fn is_narwhal(&self) -> bool {
+        self.config().dev.narwhal
+    }
+    
     /// Returns the transaction pool config of the node.
     pub fn pool_config(&self) -> PoolConfig {
         self.config().txpool.pool_config()
